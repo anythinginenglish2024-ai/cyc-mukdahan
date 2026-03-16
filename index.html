@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYC Mukdahan - The Elite Recruitment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- New Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff7e5f;
+            --secondary: #feb47b;
+            --dark: #1a1a1a;
+        }
+        /* Thai Font Optimization */
+        body { 
+            font-family: 'Sarabun', sans-serif; 
+            background-color: #fdfbfb; 
+            color: #333; 
+            line-height: 1.6;
+        }
+        h1, h2, h3, h4, .font-kanit { 
+            font-family: 'Kanit', sans-serif; 
+        }
+        .font-playfair { font-family: 'Playfair Display', serif; }
+
+        .luxury-gradient { background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%); }
+        .btn-luxury {
+            background: linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-luxury:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(255, 126, 95, 0.3); }
+        
+        .timeline-card {
+            border-left: 3px solid var(--primary);
+            padding-left: 2rem;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+        .timeline-card::before {
+            content: '';
+            position: absolute;
+            left: -9px;
+            top: 0;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--primary);
+        }
+
+        .input-luxury {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .input-luxury:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(255, 126, 95, 0.1); }
+        
+        .view-section { display: none; }
+        .view-active { display: block; animation: fadeIn 0.6s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Contact Card Styling */
+        .contact-pill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 100px;
+            border: 1px solid #eee;
+            font-weight: bold;
+            font-size: 13px;
+            transition: 0.3s;
+            color: #4b5563;
+        }
+        .contact-pill:hover { border-color: var(--primary); color: var(--primary); transform: scale(1.05); }
+    </style>
+</head>
+<body>
+
+    <!-- Nav -->
+    <nav class="bg-white/90 backdrop-blur-md sticky top-0 z-[100] border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showView('home')">
+                <img src="https://upload.wikimedia.org/wikipedia/th/thumb/f/f0/Emblem_of_the_Children_and_Youth_Council_of_Thailand.png/220px-Emblem_of_the_Children_and_Youth_Council_of_Thailand.png" class="w-10 h-10">
+                <span class="text-orange-600 font-bold text-xl tracking-tighter uppercase font-kanit">CYC Mukdahan</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex bg-gray-100 rounded-full p-1 text-[10px] font-bold font-kanit">
+                    <button id="langTH" onclick="setLang('th')" class="px-3 py-1 rounded-full text-gray-400">TH</button>
+                    <button id="langEN" onclick="setLang('en')" class="px-3 py-1 rounded-full bg-white shadow-sm text-orange-600">EN</button>
+                </div>
+                <button onclick="openAdminPortal()" class="bg-black text-white px-5 py-2 rounded-full text-[10px] font-bold tracking-widest hover:bg-orange-600 transition font-kanit">ADMIN</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home View -->
+    <section id="homeView" class="view-section view-active">
+        <!-- Hero -->
+        <div class="max-w-5xl mx-auto py-24 px-6 text-center">
+            <span id="heroBadge" class="inline-block px-4 py-1 bg-orange-50 text-orange-600 text-[10px] font-bold rounded-full mb-6 font-kanit tracking-[0.2em]">OPEN RECRUITMENT 2026</span>
+            <h1 id="heroTitle" class="text-5xl md:text-7xl font-playfair font-bold mb-6 leading-tight">Elite <span class="text-orange-500 italic">Leadership</span> Recruitment</h1>
+            <p id="heroDesc" class="text-gray-500 text-lg mb-10 font-light max-w-2xl mx-auto">Build the future of Mukdahan with us. Join the Children and Youth Council of Mukdahan.</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4 mb-24">
+                <button id="btnApply" onclick="showView('apply')" class="btn-luxury text-white font-bold px-12 py-5 rounded-full text-sm font-kanit uppercase tracking-widest">Apply Now</button>
+                <button id="btnTrack" onclick="scrollToTracking()" class="bg-white text-gray-800 border border-gray-100 font-bold px-12 py-5 rounded-full text-sm font-kanit uppercase tracking-widest shadow-sm">View Applicants</button>
+            </div>
+
+            <!-- Schedule / Timeline Section -->
+            <div class="grid md:grid-cols-2 gap-16 text-left mb-24">
+                <div>
+                    <h2 id="schedTitle" class="text-3xl font-kanit font-bold mb-8 flex items-center gap-3">
+                        <span class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center">📅</span>
+                        Schedule
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="timeline-card">
+                            <h4 id="sched1" class="font-bold text-orange-600 font-kanit">Now - March 31, 2026</h4>
+                            <p id="sched1Desc" class="text-gray-500 text-sm">Online Application Period</p>
+                        </div>
+                        <div class="timeline-card">
+                            <h4 id="sched2" class="font-bold text-gray-800 font-kanit">April 3, 2026</h4>
+                            <p id="sched2Desc" class="text-gray-500 text-sm">First Round Result & Announcement</p>
+                        </div>
+                        <div class="timeline-card">
+                            <h4 id="schedConfirm" class="font-bold text-gray-800 font-kanit">April 3 - 4, 2026</h4>
+                            <p id="schedConfirmDesc" class="text-gray-500 text-sm">Confirmation for Interview</p>
+                        </div>
+                        <div class="timeline-card">
+                            <h4 id="sched3" class="font-bold text-gray-800 font-kanit">April 5, 2026</h4>
+                            <p id="sched3Desc" class="text-gray-500 text-sm">Online Interview via Zoom/Meet</p>
+                        </div>
+                        <div class="timeline-card">
+                            <h4 id="sched4" class="font-bold text-gray-800 font-kanit">April 6, 2026</h4>
+                            <p id="sched4Desc" class="text-gray-500 text-sm">Final Result Announcement</p>
+                        </div>
+                        <div class="timeline-card">
+                            <h4 id="schedFinalConfirm" class="font-bold text-gray-800 font-kanit">April 7 - 8, 2026</h4>
+                            <p id="schedFinalConfirmDesc" class="text-gray-500 text-sm">Final Confirmation & Registration</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Statistics & Tracking Preview -->
+                <div class="bg-white rounded-[3rem] p-10 shadow-xl border border-orange-50" id="trackingSection">
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <h2 id="trackTitle" class="text-2xl font-kanit font-bold">Candidates</h2>
+                            <p id="trackDesc" class="text-gray-400 text-xs font-kanit">Latest registration tracking</p>
+                        </div>
+                        <div class="text-right">
+                            <span id="totalApplicants" class="text-5xl font-playfair text-orange-500 font-bold">0</span>
+                            <span class="block text-[10px] text-gray-400 font-bold uppercase font-kanit">Total</span>
+                        </div>
+                    </div>
+                    <div class="overflow-hidden">
+                        <table class="w-full text-sm">
+                            <thead class="text-[10px] font-bold text-gray-400 uppercase font-kanit border-b">
+                                <tr>
+                                    <th class="py-4 text-left">#</th>
+                                    <th id="thCandidate" class="py-4 text-left">Candidate</th>
+                                    <th id="thStatus" class="py-4 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="publicList" class="divide-y divide-gray-50"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- President Contact Section -->
+            <div class="py-16 border-t border-gray-100">
+                <h3 id="contactTitle" class="text-2xl font-kanit font-bold mb-4">Contact Our Leadership</h3>
+                <p id="presidentName" class="text-orange-600 font-bold font-kanit mb-8">ประธานสภาเด็กและเยาวชนจังหวัดมุกดาหาร: นายธีรพัฒน์ ทับวิเศษ</p>
+                <div class="flex flex-wrap justify-center gap-4 font-kanit">
+                    <a href="tel:0956523781" class="contact-pill shadow-sm">
+                        <span class="text-lg">📞</span> <span class="hidden md:inline">Phone:</span> 095-652-3781
+                    </a>
+                    <a href="https://www.facebook.com/p/%E0%B8%AA%E0%B8%A0%E0%B8%B2%E0%B9%80%E0%B8%94%E0%B9%87%E0%B8%81%E0%B9%81%E0%B8%A5%E0%B8%B0%E0%B9%80%E0%B8%A2%E0%B8%B2%E0%B8%A7%E0%B8%8A%E0%B8%99%E0%B8%88%E0%B8%B1%E0%B8%87%E0%B8%AB%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%A1%E0%B8%B8%E0%B8%81%E0%B8%94%E0%B8%B2%E0%B8%AB%E0%B8%B2%E0%B8%A3-61571249850825/" target="_blank" class="contact-pill shadow-sm">
+                        <span class="text-lg">👤</span> FB: สภาเด็กและเยาวชนจังหวัดมุกดาหาร
+                    </a>
+                    <a href="https://www.instagram.com/cyc.mukdahan.official/" target="_blank" class="contact-pill shadow-sm">
+                        <span class="text-lg">📸</span> IG: cyc.mukdahan.official
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apply View -->
+    <section id="applyView" class="view-section py-16 px-6">
+        <div class="max-w-4xl mx-auto bg-white rounded-[3rem] shadow-2xl overflow-hidden">
+            <div class="luxury-gradient p-12 text-white">
+                <h2 id="formTitle" class="text-3xl font-kanit font-bold uppercase tracking-tight">Application Form</h2>
+                <p id="formSubtitle" class="opacity-80 text-sm mt-2">Please fill in all information for your benefit.</p>
+            </div>
+            
+            <form id="mainForm" class="p-10 space-y-12">
+                <!-- Identity -->
+                <div class="space-y-6">
+                    <h3 id="secIdentity" class="text-lg font-bold font-kanit border-l-4 border-orange-500 pl-3">Personal Identity</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label id="lblId" class="block text-[10px] font-bold text-gray-400 uppercase mb-2 font-kanit">National ID</label>
+                            <input type="text" id="citizenId" maxlength="13" required class="w-full input-luxury font-mono tracking-widest" placeholder="X-XXXX-XXXXX-XX-X">
+                        </div>
+                        <div>
+                            <label id="lblBirth" class="block text-[10px] font-bold text-gray-400 uppercase mb-2 font-kanit">Birthday</label>
+                            <input type="date" id="birthDate" required class="w-full input-luxury">
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div class="md:col-span-1">
+                            <label id="lblPrefix" class="block text-[10px] font-bold text-gray-400 uppercase mb-2 font-kanit">Prefix</label>
+                            <select id="title" required class="w-full input-luxury">
+                                <option value="">-</option>
+                                <option value="นาย">นาย / Mr.</option>
+                                <option value="นางสาว">น.ส. / Ms.</option>
+                                <option value="เด็กชาย">ด.ช. / Master</option>
+                                <option value="เด็กหญิง">ด.ญ. / Miss</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-3">
+                            <label id="lblName" class="block text-[10px] font-bold text-gray-400 uppercase mb-2 font-kanit">Full Name</label>
+                            <input type="text" id="fullName" required class="w-full input-luxury">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="space-y-6">
+                    <h3 id="secContact" class="text-lg font-bold font-kanit border-l-4 border-orange-500 pl-3">Contact Info</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <input type="tel" id="userPhone" required placeholder="Phone Number" class="input-luxury">
+                        <input type="text" id="socialLine" placeholder="Line ID" class="input-luxury">
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <input type="text" id="socialFb" placeholder="Facebook" class="input-luxury text-sm">
+                        <input type="text" id="socialIg" placeholder="Instagram" class="input-luxury text-sm">
+                        <input type="text" id="socialTiktok" placeholder="TikTok" class="input-luxury text-sm">
+                    </div>
+                </div>
+
+                <!-- Address -->
+                <div class="space-y-6">
+                    <h3 id="secAddress" class="text-lg font-bold font-kanit border-l-4 border-orange-500 pl-3">Location</h3>
+                    <textarea id="regAddress" rows="2" required placeholder="Registered Address" class="input-luxury"></textarea>
+                    <div class="flex items-center space-x-2 text-sm text-orange-600 font-bold bg-orange-50 p-4 rounded-xl border border-orange-100">
+                        <input type="checkbox" id="sameAddress" onchange="syncAddress()" class="w-4 h-4 accent-orange-500">
+                        <label id="lblSameAddr" for="sameAddress">Current address same as registered</label>
+                    </div>
+                    <textarea id="curAddress" rows="2" required placeholder="Current Address" class="input-luxury"></textarea>
+                </div>
+
+                <!-- Guardian -->
+                <div class="space-y-6">
+                    <h3 id="secGuardian" class="text-lg font-bold font-kanit border-l-4 border-orange-500 pl-3">Parent/Guardian</h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <select id="guardianRole" required class="w-full input-luxury font-bold">
+                            <option value="">Role</option>
+                            <option value="พ่อ">บิดา (Father)</option>
+                            <option value="แม่">มารดา (Mother)</option>
+                            <option value="ผู้ปกครอง">ผู้ปกครอง (Guardian)</option>
+                        </select>
+                        <input type="text" id="guardianName" required placeholder="Name-Surname" class="col-span-2 input-luxury">
+                    </div>
+                    <input type="tel" id="guardianTel" required placeholder="Guardian Phone Number" class="input-luxury">
+                </div>
+
+                <!-- Essay -->
+                <div class="space-y-6">
+                    <h3 id="secEssay" class="text-lg font-bold font-kanit border-l-4 border-orange-500 pl-3">Statement of Purpose</h3>
+                    <textarea id="reason" rows="5" required maxlength="5000" placeholder="Why do you want to join? (Max 1,000 words)" class="input-luxury"></textarea>
+                    <p class="text-[10px] text-gray-400 text-right uppercase font-bold">Max 1,000 words</p>
+                </div>
+
+                <!-- Portfolio -->
+                <div class="bg-gray-50 p-8 rounded-3xl border border-dashed border-gray-300 text-center">
+                    <label class="block text-xs font-bold text-gray-500 mb-4 uppercase font-kanit">Portfolio (Optional / PDF Only)</label>
+                    <input type="file" id="portFile" accept=".pdf" class="hidden" onchange="updateFileLabel()">
+                    <button type="button" id="fileBtn" onclick="document.getElementById('portFile').click()" class="w-full max-w-xs mx-auto bg-white border border-gray-200 p-4 rounded-xl font-kanit font-bold hover:bg-orange-500 hover:text-white transition uppercase tracking-widest text-xs">Choose File</button>
+                </div>
+
+                <div class="bg-red-50 p-6 rounded-2xl border border-red-100">
+                    <p id="revAlert" class="text-red-600 text-xs font-bold text-center italic">⚠️ Warning: False information leads to immediate disqualification.</p>
+                </div>
+
+                <div class="pt-6 flex flex-col md:flex-row gap-4">
+                    <button type="button" onclick="showView('home')" class="flex-1 p-5 rounded-2xl bg-gray-100 font-bold font-kanit text-gray-400">CANCEL</button>
+                    <button type="button" onclick="reviewApplication()" class="flex-[2] p-5 rounded-2xl btn-luxury text-white font-bold font-kanit tracking-widest uppercase shadow-xl">Review & Confirm</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Review Step -->
+    <section id="reviewView" class="view-section py-20 px-6">
+        <div class="max-w-2xl mx-auto bg-white rounded-[2rem] shadow-2xl p-10 border border-orange-100">
+            <h2 id="revTitle" class="text-2xl font-kanit font-bold mb-6">Review Details</h2>
+            <div id="reviewContent" class="space-y-4 text-sm bg-gray-50 p-8 rounded-2xl mb-8 border border-gray-100"></div>
+            <div class="flex gap-4">
+                <button onclick="showView('apply')" class="flex-1 p-4 bg-gray-100 rounded-xl font-bold font-kanit">EDIT</button>
+                <button onclick="finalSubmit()" class="flex-[2] p-4 btn-luxury text-white rounded-xl font-bold font-kanit tracking-widest uppercase">SUBMIT</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Success View -->
+    <section id="successView" class="view-section py-32 px-6 text-center">
+        <div class="max-w-md mx-auto bg-white p-12 rounded-[2rem] shadow-2xl">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            </div>
+            <h2 id="sucTitle" class="text-3xl font-kanit font-bold mb-2">Submission Success!</h2>
+            <p id="sucDesc" class="text-gray-400 text-sm">Your application has been received. Please wait for the official announcement.</p>
+            <button onclick="showView('home')" class="mt-10 bg-black text-white px-10 py-4 rounded-full font-bold font-kanit text-xs tracking-widest uppercase">Back to Home</button>
+        </div>
+    </section>
+
+    <!-- Admin Dashboard -->
+    <section id="adminView" class="view-section py-10 px-4 bg-gray-50 min-h-screen">
+        <div class="max-w-full mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
+            <div class="bg-gray-900 p-8 text-white flex justify-between items-center">
+                <h2 class="text-xl font-kanit font-bold">Admin Panel</h2>
+                <button onclick="showView('home')" class="bg-red-500 text-white px-6 py-2 rounded-full text-xs font-bold font-kanit">LOGOUT</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[1400px] text-left text-xs">
+                    <thead class="bg-gray-50 font-kanit border-b font-bold text-gray-500">
+                        <tr>
+                            <th class="p-6">TIMESTAMP</th>
+                            <th class="p-6">ID CARD</th>
+                            <th class="p-6">NAME</th>
+                            <th class="p-6">AGE</th>
+                            <th class="p-6">CONTACT</th>
+                            <th class="p-6">GUARDIAN</th>
+                            <th class="p-6">PORT</th>
+                            <th class="p-6 text-center">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminList" class="divide-y divide-gray-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Password Modal -->
+    <div id="adminModal" class="fixed inset-0 bg-black/90 flex items-center justify-center z-[200] hidden p-6">
+        <div class="bg-white p-10 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 font-kanit uppercase">Admin Authentication</h3>
+            <p class="text-gray-400 text-xs mb-8 font-kanit">ระบุรหัสผ่านเพื่อเข้าถึงฐานข้อมูล</p>
+            <input type="password" id="adminPass" placeholder="••••••••" class="w-full p-4 border rounded-xl mb-6 text-center tracking-[0.5em] font-bold text-2xl focus:border-orange-500 outline-none">
+            <div class="flex gap-2">
+                <button onclick="verifyAdmin()" class="flex-[2] bg-black text-white p-4 rounded-xl font-bold font-kanit tracking-widest uppercase">Verify</button>
+                <button onclick="document.getElementById('adminModal').classList.add('hidden')" class="flex-1 bg-gray-100 p-4 rounded-xl font-bold font-kanit text-gray-400">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="py-10 text-center text-[10px] text-gray-400 font-bold uppercase tracking-widest font-kanit">
+        &copy; 2026 CYC Mukdahan. All Rights Reserved.
+    </footer>
+
+    <script>
+        const TRANSLATIONS = {
+            th: {
+                heroBadge: 'เปิดรับสมัครคณะทำงาน ประจำปี 2569',
+                heroTitle: 'ร่วมสร้าง <span class="text-orange-500 italic">การเปลี่ยนแปลง</span> กับเรา',
+                heroDesc: 'สภาเด็กและเยาวชนจังหวัดมุกดาหาร เปิดรับสมัครคนรุ่นใหม่ที่มีไฟและพร้อมขับเคลื่อนสังคมไปด้วยกัน',
+                btnApply: 'สมัครตอนนี้',
+                btnTrack: 'รายชื่อผู้สมัคร',
+                schedTitle: '📅 กำหนดการ (Schedule)',
+                sched1: 'วันนี้ - 31 มีนาคม 2569',
+                sched1Desc: 'เปิดรับสมัครผ่านระบบออนไลน์',
+                sched2: '3 เมษายน 2569',
+                sched2Desc: 'ประกาศรายชื่อผู้มีสิทธิ์สอบสัมภาษณ์ (รอบแรก)',
+                schedConfirm: '3 - 4 เมษายน 2569',
+                schedConfirmDesc: 'ยืนยันสิทธิ์เข้ารับการสัมภาษณ์',
+                sched3: '5 เมษายน 2569',
+                sched3Desc: 'สอบสัมภาษณ์ออนไลน์ (Zoom / Google Meet)',
+                sched4: '6 เมษายน 2569',
+                sched4Desc: 'ประกาศผลการคัดเลือกตัวจริง',
+                schedFinalConfirm: '7 - 8 เมษายน 2569',
+                schedFinalConfirmDesc: 'ยืนยันสิทธิ์เข้าทำงานและปฐมนิเทศ',
+                trackTitle: 'ผู้สมัครล่าสุด',
+                trackDesc: 'รายชื่อผู้สมัครที่ส่งข้อมูลแล้ว',
+                thCandidate: 'ผู้สมัคร',
+                thStatus: 'สถานะ',
+                formTitle: 'แบบฟอร์มใบสมัคร',
+                formSubtitle: 'โปรดกรอกข้อมูลให้ครบถ้วนเพื่อผลประโยชน์ของท่าน',
+                secIdentity: 'ข้อมูลตัวตน (Identity)',
+                lblId: 'เลขบัตรประชาชน',
+                lblBirth: 'วันเกิด',
+                lblPrefix: 'คำนำหน้า',
+                lblName: 'ชื่อ-นามสกุล',
+                secContact: 'ข้อมูลการติดต่อ',
+                secAddress: 'ที่อยู่',
+                lblSameAddr: 'ที่อยู่ปัจจุบันตรงกับทะเบียนบ้าน',
+                secGuardian: 'ผู้ปกครอง',
+                secEssay: 'บรรยาย (Essay)',
+                revTitle: 'ตรวจสอบข้อมูล',
+                revAlert: '⚠️ ข้อมูลต้องเป็นความจริง หากตรวจสอบพบข้อมูลเท็จขอตัดสิทธิ์ทันทีโดยไม่แจ้งให้ทราบล่วงหน้า',
+                sucTitle: 'ส่งใบสมัครเรียบร้อย!',
+                sucDesc: 'ระบบได้รับข้อมูลของคุณแล้ว โปรดติดตามการประกาศผลตามกำหนดการ',
+                contactTitle: 'ช่องทางการติดต่อประสานงาน',
+                presidentName: 'ประธานสภาเด็กและเยาวชนจังหวัดมุกดาหาร: นายธีรพัฒน์ ทับวิเศษ'
+            },
+            en: {
+                heroBadge: 'OPEN RECRUITMENT 2026',
+                heroTitle: 'Be the <span class="text-orange-500 italic">Change</span> in Mukdahan',
+                heroDesc: 'Join the Children and Youth Council of Mukdahan. We are looking for young leaders like you.',
+                btnApply: 'Apply Now',
+                btnTrack: 'Applicants',
+                schedTitle: '📅 Timeline & Schedule',
+                sched1: 'Now - Mar 31, 2026',
+                sched1Desc: 'Online Application Period',
+                sched2: 'Apr 3, 2026',
+                sched2Desc: 'First Round Result Announcement',
+                schedConfirm: 'Apr 3 - 4, 2026',
+                schedConfirmDesc: 'Interview Confirmation',
+                sched3: 'Apr 5, 2026',
+                sched3Desc: 'Online Interview (Zoom / Meet)',
+                sched4: 'Apr 6, 2026',
+                sched4Desc: 'Final Result Announcement',
+                schedFinalConfirm: 'Apr 7 - 8, 2026',
+                schedFinalConfirmDesc: 'Final Confirmation & Registration',
+                trackTitle: 'Latest Applicants',
+                trackDesc: 'Real-time candidate tracking',
+                thCandidate: 'Candidate',
+                thStatus: 'Verification',
+                formTitle: 'Registration Form',
+                formSubtitle: 'Please ensure all data is accurate.',
+                secIdentity: 'Personal Identity',
+                lblId: 'National ID',
+                lblBirth: 'Birthday',
+                lblPrefix: 'Prefix',
+                lblName: 'Full Name',
+                secContact: 'Contact Info',
+                secAddress: 'Location',
+                lblSameAddr: 'Current address same as registered',
+                secGuardian: 'Parent/Guardian',
+                secEssay: 'Statement of Purpose',
+                revTitle: 'Review Details',
+                revAlert: '⚠️ Warning: False information leads to immediate disqualification.',
+                sucTitle: 'Submission Success!',
+                sucDesc: 'Thank you for applying. Please wait for the official announcement.',
+                contactTitle: 'Contact Our Leadership',
+                presidentName: 'CYC President: Mr. Teerapat Tubwiset'
+            }
+        };
+
+        let currentLang = 'en'; 
+        let applicants = JSON.parse(localStorage.getItem('cyc_v4_apps')) || [];
+        let tempAppData = {};
+        let deleteIdx = -1;
+
+        function setLang(lang) {
+            currentLang = lang;
+            document.getElementById('langTH').className = lang === 'th' ? 'px-3 py-1 rounded-full bg-white shadow-sm text-orange-600' : 'px-3 py-1 rounded-full text-gray-400';
+            document.getElementById('langEN').className = lang === 'en' ? 'px-3 py-1 rounded-full bg-white shadow-sm text-orange-600' : 'px-3 py-1 rounded-full text-gray-400';
+            
+            const trans = TRANSLATIONS[lang];
+            for (let id in trans) {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = trans[id];
+            }
+        }
+
+        function showView(name) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('view-active'));
+            const target = document.getElementById(name + 'View');
+            if (target) {
+                target.classList.add('view-active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function scrollToTracking() {
+            showView('home');
+            document.getElementById('trackingSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function syncAddress() {
+            if (document.getElementById('sameAddress').checked) {
+                document.getElementById('curAddress').value = document.getElementById('regAddress').value;
+            }
+        }
+
+        function updateFileLabel() {
+            const file = document.getElementById('portFile').files[0];
+            if (file) document.getElementById('fileBtn').innerText = "✓ SELECTED: " + file.name.substring(0, 12);
+        }
+
+        function reviewApplication() {
+            const form = document.getElementById('mainForm');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
+
+            const birth = new Date(document.getElementById('birthDate').value);
+            const age = new Date().getFullYear() - birth.getFullYear();
+
+            tempAppData = {
+                timestamp: new Date().toLocaleString('th-TH'),
+                id: document.getElementById('citizenId').value,
+                name: document.getElementById('title').value + " " + document.getElementById('fullName').value,
+                age: age,
+                phone: document.getElementById('userPhone').value,
+                line: document.getElementById('socialLine').value,
+                guardian: `${document.getElementById('guardianRole').value} ${document.getElementById('guardianName').value} (${document.getElementById('guardianTel').value})`,
+                hasPort: document.getElementById('portFile').files.length > 0
+            };
+
+            const content = `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <p><strong>Name:</strong> ${tempAppData.name}</p>
+                    <p><strong>Age:</strong> ${tempAppData.age}</p>
+                    <p><strong>Citizen ID:</strong> ${tempAppData.id}</p>
+                    <p><strong>Phone:</strong> ${tempAppData.phone}</p>
+                    <div class="md:col-span-2"><p><strong>Guardian:</strong> ${tempAppData.guardian}</p></div>
+                    <p><strong>Portfolio:</strong> ${tempAppData.hasPort ? 'Yes' : 'No'}</p>
+                </div>
+            `;
+            document.getElementById('reviewContent').innerHTML = content;
+            showView('review');
+        }
+
+        function finalSubmit() {
+            applicants.unshift(tempAppData);
+            localStorage.setItem('cyc_v4_apps', JSON.stringify(applicants));
+            renderPublic();
+            showView('success');
+            document.getElementById('mainForm').reset();
+            document.getElementById('fileBtn').innerText = "Choose File";
+        }
+
+        function renderPublic() {
+            document.getElementById('totalApplicants').innerText = applicants.length;
+            const tbody = document.getElementById('publicList');
+            tbody.innerHTML = applicants.map((a, i) => `
+                <tr class="hover:bg-orange-50/50">
+                    <td class="py-4 font-playfair text-gray-300">#${(i+1).toString().padStart(2, '0')}</td>
+                    <td class="py-4 font-bold text-gray-700">${a.name.split(' ')[0]}***</td>
+                    <td class="py-4 text-center">
+                        <span class="px-3 py-1 bg-green-50 text-green-600 text-[8px] font-bold rounded-full uppercase border border-green-100 font-kanit">Verified</span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAdminPortal() {
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function verifyAdmin() {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === "SCMD20242025") {
+                document.getElementById('adminModal').classList.add('hidden');
+                document.getElementById('adminPass').value = "";
+                if (deleteIdx > -1) {
+                    applicants.splice(deleteIdx, 1);
+                    localStorage.setItem('cyc_v4_apps', JSON.stringify(applicants));
+                    deleteIdx = -1;
+                }
+                renderAdmin();
+                renderPublic();
+                showView('admin');
+            } else {
+                alert("ACCESS DENIED");
+            }
+        }
+
+        function renderAdmin() {
+            const tbody = document.getElementById('adminList');
+            tbody.innerHTML = applicants.map((a, i) => `
+                <tr class="hover:bg-gray-50 border-b">
+                    <td class="p-6 text-gray-400 font-mono">${a.timestamp}</td>
+                    <td class="p-6 font-mono font-bold text-orange-600">${a.id}</td>
+                    <td class="p-6 font-bold text-sm">${a.name}</td>
+                    <td class="p-6 text-center font-bold">${a.age}</td>
+                    <td class="p-6 leading-tight">${a.phone}<br><span class="text-[9px] text-gray-400">LINE: ${a.line}</span></td>
+                    <td class="p-6 text-[10px] text-gray-500 max-w-xs">${a.guardian}</td>
+                    <td class="p-6 text-center text-lg">${a.hasPort ? '📄' : '❌'}</td>
+                    <td class="p-6 text-center">
+                        <button onclick="requestDelete(${i})" class="text-red-400 hover:text-red-600 font-bold font-kanit underline">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function requestDelete(i) {
+            deleteIdx = i;
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        // Initialize
+        setLang('en');
+        renderPublic();
+    </script>
+</body>
+</html>
