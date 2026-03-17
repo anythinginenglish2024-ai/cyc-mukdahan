@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYC Mukdahan - ระบบรับสมัครออนไลน์</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff7e5f; --secondary: #feb47b; }
+        body { font-family: 'Sarabun', sans-serif; background-color: #f9fafb; color: #1f2937; scroll-behavior: smooth; }
+        h1, h2, h3, .font-kanit { font-family: 'Kanit', sans-serif; }
+        .luxury-gradient { background: linear-gradient(135deg, #ff7e5f 0%, #feb47b 100%); }
+        .btn-submit { background: linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%); transition: all 0.3s; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(255, 126, 95, 0.4); }
+        .input-field { width: 100%; padding: 0.75rem 1rem; border: 1px solid #e5e7eb; border-radius: 0.75rem; transition: 0.2s; background: white; }
+        .input-field:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(255, 126, 95, 0.1); }
+        .section-title { border-left: 4px solid var(--primary); padding-left: 1rem; margin-bottom: 1.5rem; font-weight: 700; color: #374151; }
+        .view-section { display: none; }
+        .view-active { display: block; animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .photo-preview { width: 120px; height: 150px; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f3f4f6; }
+        .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .status-pill { padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 700; }
+        .status-waiting { background: #fef3c7; color: #92400e; }
+        .status-success { background: #dcfce7; color: #166534; }
+        .status-error { background: #fee2e2; color: #991b1b; }
+        .timeline-dot { width: 12px; height: 12px; background: var(--primary); border-radius: 50%; position: relative; z-index: 10; }
+        .timeline-line { position: absolute; left: 5px; top: 0; bottom: 0; width: 2px; background: #e5e7eb; }
+        .toast { position: fixed; bottom: 20px; right: 20px; padding: 1rem 1.5rem; border-radius: 1rem; background: #333; color: white; transform: translateY(100px); transition: 0.3s; z-index: 1000; font-size: 0.875rem; }
+        .toast.show { transform: translateY(0); }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <div id="toast" class="toast font-kanit">ข้อความระบบ</div>
+
+    <!-- Navigation -->
+    <nav class="bg-white border-b sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="showView('home')">
+                <img src="https://upload.wikimedia.org/wikipedia/th/thumb/f/f0/Emblem_of_the_Children_and_Youth_Council_of_Thailand.png/220px-Emblem_of_the_Children_and_Youth_Council_of_Thailand.png" class="w-8 h-8">
+                <span class="font-kanit font-bold text-orange-600">CYC MUKDAHAN</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="showView('home')" class="text-sm font-kanit font-bold text-gray-400 hover:text-orange-500 transition">หน้าหลัก</button>
+                <button id="adminBtn" onclick="openAdminPortal()" class="bg-black text-white px-4 py-2 rounded-full text-[10px] font-bold tracking-widest font-kanit">ADMIN LOGIN</button>
+                <button id="logoutBtn" onclick="logoutAdmin()" class="hidden bg-red-500 text-white px-4 py-2 rounded-full text-[10px] font-bold tracking-widest font-kanit">LOGOUT</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home View -->
+    <section id="homeView" class="view-section view-active">
+        <div class="max-w-4xl mx-auto py-12 px-6 text-center">
+            <h1 class="text-4xl md:text-6xl font-kanit font-bold text-gray-900 mb-4 leading-tight">ร่วมเป็นส่วนหนึ่งของ<br><span class="text-orange-500 italic">พลังเยาวชนมุกดาหาร</span></h1>
+            
+            <div class="inline-flex items-center gap-4 bg-white px-6 py-3 rounded-2xl shadow-sm border border-orange-100 mb-8">
+                <div class="text-left">
+                    <p class="text-[10px] uppercase font-bold text-gray-400 tracking-wider">ผู้สมัครรวม</p>
+                    <div class="flex items-baseline gap-2">
+                        <span id="applicantCount" class="text-3xl font-kanit font-bold text-orange-500">0</span>
+                        <span class="text-sm text-gray-500 font-bold">คน</span>
+                    </div>
+                </div>
+                <div class="w-[1px] h-10 bg-gray-100"></div>
+                <button onclick="showView('list')" class="text-xs font-bold text-blue-600 hover:underline">🔍 รายชื่อผู้สมัคร</button>
+            </div>
+
+            <p class="text-gray-500 mb-10 text-lg">สภาเด็กและเยาวชนจังหวัดมุกดาหาร เปิดรับสมัครคณะทำงาน ประจำปี 2569</p>
+            
+            <div class="mb-12">
+                <button onclick="startApply()" class="btn-submit text-white px-12 py-4 rounded-full font-kanit font-bold text-xl shadow-lg">คลิกเพื่อสมัครออนไลน์</button>
+            </div>
+
+            <!-- Schedule -->
+            <div class="max-w-2xl mx-auto mb-16 text-left font-kanit">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <span class="p-2 bg-orange-100 rounded-lg text-orange-600">📅</span> กำหนดการรับสมัคร
+                    </h3>
+                    <button id="editScheduleBtn" onclick="showScheduleEditor()" class="hidden text-xs bg-orange-50 text-orange-600 px-3 py-1 rounded-lg border border-orange-200 font-bold">แก้ไขกำหนดการ</button>
+                </div>
+                <div id="scheduleContainer" class="space-y-0 relative min-h-[100px]">
+                    <div class="timeline-line"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- List View -->
+    <section id="listView" class="view-section py-12 px-4">
+        <div class="max-w-6xl mx-auto bg-white rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 font-kanit">
+            <div class="bg-gray-900 p-8 text-white flex flex-col md:flex-row justify-between items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold">ประกาศรายชื่อและสถานะ</h2>
+                    <p id="listSubtitle" class="text-xs text-gray-400">ข้อมูลเชื่อมต่อแบบ Real-time กับ Google Sheets</p>
+                </div>
+                <div class="flex gap-2">
+                    <button id="refreshBtn" onclick="refreshData()" class="text-xs bg-blue-600 px-4 py-2 rounded-lg font-bold flex items-center gap-2">
+                        <span>🔄</span> รีเฟรชข้อมูล
+                    </button>
+                    <button onclick="showView('home')" class="text-xs bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20">กลับหน้าหลัก</button>
+                </div>
+            </div>
+            <div class="p-4 overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-50 text-gray-600 font-bold">
+                        <tr>
+                            <th class="p-4">ลำดับ</th>
+                            <th class="p-4">รูปถ่าย</th>
+                            <th class="p-4">ชื่อ-นามสกุล</th>
+                            <th class="p-4">ประเภทสัมภาษณ์</th>
+                            <th class="p-4">สถานะ</th>
+                            <th class="p-4">จัดการ/แก้ไข</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicantTableBody" class="divide-y divide-gray-100">
+                        <tr><td colspan="6" class="p-10 text-center text-gray-400">กำลังดึงข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Apply View -->
+    <section id="applyView" class="view-section py-8 px-4">
+        <div class="max-w-4xl mx-auto bg-white rounded-[2rem] shadow-xl overflow-hidden border border-gray-100 font-kanit">
+            <div class="luxury-gradient p-8 text-white">
+                <h2 id="formTitle" class="text-2xl font-bold">ใบสมัครออนไลน์</h2>
+                <p class="text-sm opacity-90 mt-1">กรุณากรอกข้อมูลให้ครบถ้วนเพื่อประโยชน์ของท่าน</p>
+            </div>
+
+            <form id="cycForm" class="p-8 space-y-6">
+                <input type="hidden" id="editRowId" value="">
+                
+                <h3 class="section-title">ข้อมูลผู้สมัคร</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="flex flex-col items-center gap-4 bg-gray-50 p-4 rounded-2xl border">
+                        <div class="photo-preview shadow-inner" id="photoPreview">
+                            <span class="text-[10px] text-gray-400">รูปหน้าตรง</span>
+                        </div>
+                        <input type="file" id="userPhoto" accept="image/*" class="text-xs w-full" onchange="previewImage(this)">
+                    </div>
+                    <div class="space-y-4">
+                        <label class="block text-sm font-bold">รูปแบบสัมภาษณ์ที่สะดวก</label>
+                        <select id="interviewType" required class="input-field">
+                            <option value="On-site (ณ มุกดาหาร)">On-site (ณ มุกดาหาร)</option>
+                            <option value="Online (ผ่าน Zoom/Meet)">Online (ผ่าน Zoom/Meet)</option>
+                        </select>
+                        <label class="block text-sm font-bold">เลขประจำตัวประชาชน</label>
+                        <input type="text" id="citizenId" maxlength="13" required class="input-field" placeholder="13 หลัก">
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <input type="text" id="fullName" required class="input-field" placeholder="ชื่อ-นามสกุล">
+                    <input type="text" id="school" required class="input-field" placeholder="โรงเรียน/สถานศึกษา">
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <input type="tel" id="phone" required class="input-field" placeholder="เบอร์โทรศัพท์ที่ติดต่อได้">
+                    <input type="text" id="lineId" class="input-field" placeholder="Line ID (ถ้ามี)">
+                </div>
+
+                <textarea id="reasonApply" rows="3" required class="input-field" placeholder="เหตุผลที่สนใจเข้าร่วมสภาเด็กและเยาวชน?"></textarea>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="button" onclick="showView('home')" class="flex-1 py-4 bg-gray-100 rounded-xl font-bold">ยกเลิก</button>
+                    <button type="button" onclick="showConfirmStep()" class="flex-[3] py-4 btn-submit text-white rounded-xl font-bold text-lg">ขั้นตอนถัดไป</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Schedule Editor Modal -->
+    <div id="scheduleModal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-2xl p-6 font-kanit">
+            <h3 class="text-lg font-bold mb-4">จัดการกำหนดการ (บันทึกอัตโนมัติ)</h3>
+            <div id="scheduleEditList" class="space-y-4 max-h-[60vh] overflow-y-auto mb-4 p-1"></div>
+            <button onclick="addScheduleItem()" class="w-full py-2 border-2 border-dashed border-gray-200 text-gray-400 rounded-xl mb-4 hover:bg-gray-50">+ เพิ่ม</button>
+            <div class="flex gap-2">
+                <button onclick="closeScheduleEditor()" class="flex-1 py-2 bg-gray-100 rounded-xl font-bold">ปิด</button>
+                <button onclick="saveScheduleToServer()" class="flex-1 py-2 bg-orange-500 text-white rounded-xl font-bold">บันทึกทั้งหมด</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm & Success -->
+    <div id="confirmView" class="view-section py-20 px-4 text-center">
+        <div class="max-w-md mx-auto bg-white rounded-3xl p-8 shadow-2xl font-kanit border border-orange-100">
+            <h2 class="text-2xl font-bold mb-4">ยืนยันข้อมูล?</h2>
+            <p class="text-gray-400 text-sm mb-8">ข้อมูลจะถูกบันทึกลงฐานข้อมูลจังหวัดมุกดาหาร</p>
+            <button onclick="finalSubmit()" id="finalBtn" class="w-full py-4 btn-submit text-white rounded-xl font-bold text-lg mb-3">ตกลง ส่งใบสมัคร</button>
+            <button onclick="showView('apply')" class="text-gray-400 text-sm font-bold">ย้อนกลับ</button>
+        </div>
+    </div>
+
+    <div id="successView" class="view-section py-32 px-6 text-center">
+        <div class="max-w-md mx-auto bg-white p-12 rounded-[3rem] shadow-2xl font-kanit">
+            <div class="text-6xl mb-6">🎉</div>
+            <h2 class="text-2xl font-bold mb-4">สมัครสำเร็จ!</h2>
+            <p class="text-gray-500 text-sm mb-10">กรุณาติดตามสถานะการคัดเลือกที่หน้าตรวจสอบรายชื่อ</p>
+            <button onclick="location.reload()" class="bg-black text-white px-10 py-4 rounded-full font-bold">กลับหน้าหลัก</button>
+        </div>
+    </div>
+
+    <script>
+        // --- ส่วนเชื่อมต่อ GOOGLE SHEETS ---
+        // อัปเดต URL ตามที่คุณให้มาแล้ว
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxou6IBtaBKniM-Zxk9JWKE5u_6ZCU3l2Q6IxsGxpNCf0WtxJ5CLBYNh-gr7ZzMXst_/exec"; 
+        const ADMIN_PASS = "SCMD20242025";
+
+        let isAdmin = false;
+        let photoBase64 = "";
+        let schedules = [
+            { date: "1-15 มี.ค. 69", title: "เปิดรับสมัครออนไลน์", desc: "ผ่านเว็บไซต์ CYC Mukdahan" },
+            { date: "16 มี.ค. 69", title: "ประกาศรายชื่อผู้มีสิทธิ์สัมภาษณ์", desc: "ตรวจสอบได้ทางหน้าเว็บ" },
+            { date: "20 มี.ค. 69", title: "วันสัมภาษณ์คณะทำงาน", desc: "On-site และ Online ตามที่แจ้งไว้" }
+        ];
+        let allApplicants = [];
+
+        window.onload = async function() {
+            await refreshData();
+            if(sessionStorage.getItem('isAdmin') === 'true') enableAdminMode();
+        };
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        // --- Core Functions ---
+        async function refreshData() {
+            const btn = document.getElementById('refreshBtn');
+            if(btn) btn.innerHTML = `<span class="loader"></span> กำลังรีเฟรช...`;
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 วินาที timeout
+
+                const response = await fetch(SCRIPT_URL + "?action=getData", { 
+                    method: 'GET',
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+
+                const data = await response.json();
+                
+                if(data.schedules && data.schedules.length > 0) schedules = data.schedules;
+                allApplicants = data.applicants || [];
+                
+                showToast("อัปเดตข้อมูลล่าสุดแล้ว");
+            } catch (e) {
+                console.error("Fetch Error:", e);
+                showToast("ใช้ข้อมูลสำรองเนื่องจากเชื่อมต่อขัดข้อง");
+            } finally {
+                if(btn) btn.innerHTML = `<span>🔄</span> รีเฟรชข้อมูล`;
+                document.getElementById('applicantCount').innerText = allApplicants.length;
+                renderSchedule();
+                renderTable(allApplicants);
+            }
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('scheduleContainer');
+            container.innerHTML = '<div class="timeline-line"></div>';
+            schedules.forEach(item => {
+                container.innerHTML += `
+                    <div class="relative pl-8 pb-8">
+                        <div class="timeline-dot absolute left-0 top-1.5"></div>
+                        <div>
+                            <p class="text-sm font-bold text-orange-500">${item.date}</p>
+                            <h4 class="font-bold text-gray-800">${item.title}</h4>
+                            <p class="text-xs text-gray-500">${item.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('applicantTableBody');
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="p-10 text-center text-gray-400">ไม่พบรายชื่อผู้สมัครในขณะนี้</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map((item, idx) => {
+                const statusClass = item.status === "สมบูรณ์" ? "status-success" : (item.status === "ต้องแก้ไข" ? "status-error" : "status-waiting");
+                const deleteBtn = isAdmin ? `<button onclick="deleteApplicant('${item.citizenId}', '${item.fullName}')" class="text-red-500 ml-2">ลบ</button>` : "";
+                return `
+                    <tr class="hover:bg-gray-50 border-b border-gray-50">
+                        <td class="p-4 text-gray-400">${idx+1}</td>
+                        <td class="p-4"><div class="w-10 h-10 rounded-lg overflow-hidden border flex items-center justify-center bg-gray-100">${item.photo ? `<img src="${item.photo}" class="w-full h-full object-cover">` : '👤'}</div></td>
+                        <td class="p-4 font-bold">${isAdmin ? item.fullName : maskName(item.fullName)}</td>
+                        <td class="p-4 text-[10px] font-bold text-blue-600">${item.interviewType || 'On-site'}</td>
+                        <td class="p-4"><span class="status-pill ${statusClass}">${item.status || 'รอตรวจสอบ'}</span></td>
+                        <td class="p-4">
+                            <button onclick="showToast('รายละเอียดกำลังเปิดให้เข้าชมเร็วๆ นี้')" class="text-orange-500 font-bold hover:underline">รายละเอียด</button>
+                            ${deleteBtn}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function maskName(name) {
+            if(!name) return "ไม่ทราบชื่อ";
+            const parts = name.split(" ");
+            return parts[0] + (parts[1] ? " " + parts[1].substring(0, 1) + "***" : " ***");
+        }
+
+        // --- Admin Functions ---
+        function openAdminPortal() {
+            const pass = prompt("กรุณาระบุรหัสผ่านผู้ดูแลระบบ:");
+            if(pass === ADMIN_PASS) {
+                enableAdminMode();
+                sessionStorage.setItem('isAdmin', 'true');
+                showToast("เข้าสู่ระบบผู้ดูแลสำเร็จ");
+            } else if(pass) alert("รหัสผ่านไม่ถูกต้อง");
+        }
+
+        function enableAdminMode() {
+            isAdmin = true;
+            document.getElementById('adminBtn').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('editScheduleBtn').classList.remove('hidden');
+            document.getElementById('listSubtitle').innerText = "โหมดผู้ดูแลระบบ: คุณสามารถจัดการข้อมูลได้";
+            renderTable(allApplicants);
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('isAdmin');
+            location.reload();
+        }
+
+        async function deleteApplicant(citizenId, name) {
+            if(confirm(`ยืนยันการลบรายชื่อของคุณ "${name}" หรือไม่?`)) {
+                showToast("กำลังลบข้อมูล...");
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        cache: 'no-cache',
+                        body: JSON.stringify({ action: "delete", citizenId: citizenId })
+                    });
+                    showToast("ส่งคำสั่งลบแล้ว กรุณารีเฟรชในอีกสักครู่");
+                    setTimeout(() => refreshData(), 1500);
+                } catch(e) {
+                    alert("ไม่สามารถลบได้: " + e.message);
+                }
+            }
+        }
+
+        // --- Form Functions ---
+        function startApply() {
+            document.getElementById('cycForm').reset();
+            document.getElementById('editRowId').value = "";
+            document.getElementById('photoPreview').innerHTML = '<span class="text-[10px] text-gray-400">รูปหน้าตรง</span>';
+            photoBase64 = "";
+            showView('apply');
+        }
+
+        function previewImage(input) {
+            const file = input.files[0];
+            if (file) {
+                if(file.size > 1024 * 1024) { 
+                    alert("ขนาดรูปภาพต้องไม่เกิน 1MB");
+                    input.value = "";
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('photoPreview').innerHTML = `<img src="${e.target.result}">`;
+                    photoBase64 = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showConfirmStep() {
+            if(!document.getElementById('cycForm').checkValidity()) {
+                document.getElementById('cycForm').reportValidity();
+                return;
+            }
+            showView('confirm');
+        }
+
+        async function finalSubmit() {
+            const btn = document.getElementById('finalBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loader"></span> กำลังบันทึก...`;
+
+            const data = {
+                action: "submit",
+                timestamp: new Date().toLocaleString('th-TH'),
+                citizenId: document.getElementById('citizenId').value,
+                fullName: document.getElementById('fullName').value,
+                school: document.getElementById('school').value,
+                phone: document.getElementById('phone').value,
+                lineId: document.getElementById('lineId').value,
+                interviewType: document.getElementById('interviewType').value,
+                reasonApply: document.getElementById('reasonApply').value,
+                photo: photoBase64,
+                status: "รอตรวจสอบ"
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    body: JSON.stringify(data)
+                });
+                showView('success');
+            } catch (e) {
+                console.error(e);
+                alert("การเชื่อมต่อมีปัญหา กรุณาลองใหม่อีกครั้ง");
+                btn.disabled = false;
+                btn.innerText = "ตกลง ส่งใบสมัคร";
+            }
+        }
+
+        // --- View Controller ---
+        function showView(name) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('view-active'));
+            document.getElementById(name + 'View').classList.add('view-active');
+            window.scrollTo(0,0);
+        }
+
+        // --- Schedule Editor ---
+        function showScheduleEditor() {
+            const list = document.getElementById('scheduleEditList');
+            list.innerHTML = '';
+            schedules.forEach((item, i) => {
+                list.innerHTML += `
+                    <div class="bg-gray-50 p-3 rounded-lg border relative">
+                        <button onclick="schedules.splice(${i},1);showScheduleEditor()" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full text-[10px]">×</button>
+                        <input type="text" placeholder="วันที่" class="w-full text-xs font-bold border-b mb-1 outline-none" value="${item.date}" onchange="schedules[${i}].date=this.value">
+                        <input type="text" placeholder="หัวข้อ" class="w-full text-sm font-bold border-b mb-1 outline-none" value="${item.title}" onchange="schedules[${i}].title=this.value">
+                        <textarea placeholder="รายละเอียด" class="w-full text-[10px] outline-none" onchange="schedules[${i}].desc=this.value">${item.desc}</textarea>
+                    </div>
+                `;
+            });
+            document.getElementById('scheduleModal').classList.remove('hidden');
+        }
+
+        function addScheduleItem() {
+            schedules.push({ date: "ว/ด/ป", title: "หัวข้อใหม่", desc: "รายละเอียดกิจกรรม..." });
+            showScheduleEditor();
+        }
+
+        async function saveScheduleToServer() {
+            const btn = event.target;
+            btn.disabled = true;
+            btn.innerText = "กำลังบันทึก...";
+            
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ action: "saveSchedules", data: schedules })
+                });
+                alert("บันทึกกำหนดการใหม่สำเร็จ");
+                location.reload();
+            } catch(e) {
+                alert("ไม่สามารถบันทึกได้ กรุณาลองใหม่");
+                btn.disabled = false;
+                btn.innerText = "บันทึกทั้งหมด";
+            }
+        }
+
+        function closeScheduleEditor() {
+            document.getElementById('scheduleModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
